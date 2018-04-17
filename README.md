@@ -16,8 +16,8 @@
 {
     "status":true,
     "body":{
-        "password":"TGEfOIZ-TnYDnCaO",
-        "id":"r-XTwHxonuU_Ysbz94eTm4BuvbWbDh-IsWakL5R6gh1qqlt6oPDI8lkdLWStJdfd"
+        "id":"r-XTwHxonuU_Ysbz94eTm4BuvbWbDh-IsWakL5R6gh1qqlt6oPDI8lkdLWStJdfd",
+        "password":"TGEfOIZ-TnYDnCaO"
     }
 }
 ```
@@ -28,6 +28,7 @@
 #### Request
 ```
 {
-    "password":"val"
+    "id":"r-XTwHxonuU_Ysbz94eTm4BuvbWbDh-IsWakL5R6gh1qqlt6oPDI8lkdLWStJdfd",
+    "password":"TGEfOIZ-TnYDnCaO"
 }
 ```
