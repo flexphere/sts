@@ -62,45 +62,11 @@ func main() {
 	router.GET("/favicon.ico", favicon)
 	router.GET("/ping", ping)
 	router.POST("/ping", ping)
-	router.POST("/create", container.Create)
-	router.POST("/d/:id", func(ctx *gin.Context) {
+	router.POST("/set", container.Create)
+	router.POST("/get", func(ctx *gin.Context) {
 		ctx.Header("Content-Type", "application/json")
 		req := &struct {
-			Password string `json:"password"`
-		}{}
-		decoder := json.NewDecoder(ctx.Request.Body)
-
-		if err := decoder.Decode(req); err != nil {
-			ctx.JSON(response.NewInternalServerError())
-			panic(err)
-		}
-
-		key := ctx.Param("id")
-		var downloader storage.Storage
-		if *settings.Settings.S3_BUCKET_NAME == "" {
-			downloader = directory.New()
-		} else {
-			downloader = s3.New()
-		}
-
-		encryptedStr, err := downloader.Download(key)
-		if err != nil {
-			ctx.JSON(response.NewNotFound())
-			panic(err)
-		}
-
-		plain, err := aes.Decrypt([]byte(req.Password), encryptedStr)
-		if err != nil {
-			ctx.JSON(response.NewNotFound())
-			panic(err)
-		}
-		ctx.Writer.Write([]byte(plain))
-	})
-
-	router.POST("/", func(ctx *gin.Context) {
-		ctx.Header("Content-Type", "application/json")
-		req := &struct {
-			Body     string `json:"body"`
+			Body     string `json:"id"`
 			Password string `json:"password"`
 		}{}
 		decoder := json.NewDecoder(ctx.Request.Body)

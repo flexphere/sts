@@ -29,7 +29,7 @@ func Create(ctx *gin.Context) {
 		ctx.JSON(response.NewInternalServerError())
 		panic(err)
 	}()
-	k := key.RandStringBytesMaskImprSrc(8)
+	k := key.RandStringBytesMaskImprSrc(16)
 
 	encryptedStr, err := aes.Encrypt([]byte(k), string(req))
 	if err != nil {

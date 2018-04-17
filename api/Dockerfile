@@ -13,7 +13,11 @@ RUN set -e \
 	&&  CGO_ENABLED=0 go build -ldflags="-s -w" .
 
 
-FROM debian:latest
+FROM alpine:latest
+
+RUN apk update \
+    && apk add ca-certificates \
+    && rm -rf /var/cache/apk/*
 
 COPY --from=build /go/src/github.com/flexphere/sts/sts /bin/sts
 
