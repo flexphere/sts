@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/flexphere/sts/lib/aes"
 	"github.com/flexphere/sts/lib/directory"
 	"github.com/flexphere/sts/lib/key"
 	"github.com/flexphere/sts/lib/response"
@@ -31,19 +30,19 @@ func Create(ctx *gin.Context) {
 		panic(err)
 	}()
 
-	enc_start := time.Now().UTC()
+	encStart := time.Now().UTC()
 
 	k := key.RandStringBytesMaskImprSrc(16)
-	encryptedStr, err := aes.Encrypt([]byte(k), string(req))
-	if err != nil {
-		ctx.JSON(response.NewInternalServerError())
-		panic(err)
-	}
-	key := fmt.Sprintf("%X", sha512.Sum512(encryptedStr))
+	// encryptedStr, err := aes.Encrypt([]byte(k), string(req))
+	// if err != nil {
+	// 	ctx.JSON(response.NewInternalServerError())
+	// 	panic(err)
+	// }
+	key := fmt.Sprintf("%X", sha512.Sum512(req))
 
-	fmt.Println("enc done in: ", time.Since(enc_start))
+	fmt.Println("enc done in: ", time.Since(encStart))
 
-	upload_start := time.Now().UTC()
+	uploadStart := time.Now().UTC()
 
 	var uploader storage.Storage
 	if *settings.Settings.S3_BUCKET_NAME == "" {
@@ -52,12 +51,12 @@ func Create(ctx *gin.Context) {
 		uploader = s3.New()
 	}
 
-	if err := uploader.Upload(key, encryptedStr); err != nil {
+	if err := uploader.Upload(key, req); err != nil {
 		ctx.JSON(response.NewInternalServerError())
 		panic(err)
 	}
 
-	fmt.Println("enc done in: ", time.Since(upload_start))
+	fmt.Println("uploaded done in: ", time.Since(uploadStart))
 
 	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(
