@@ -2,9 +2,10 @@ version: '2'
 services:
   api:
     build: ./
+    env_file: ./.env
   nginx:
     ports:
-      - 80:80
+      - 8081:80
     build: ./docker/nginx
     volumes:
       - ./docker/nginx/conf.d:/etc/nginx/conf.d

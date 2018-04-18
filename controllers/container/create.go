@@ -27,7 +27,7 @@ func Create(ctx *gin.Context) {
 		panic(err)
 	}()
 
-	password := key.RandStringBytesMaskImprSrc(16)
+	password := key.RandStringBytesMaskImprSrc(8)
 	key := fmt.Sprintf("%X", sha512.Sum512(req))
 
 	uploader := s3.New()
