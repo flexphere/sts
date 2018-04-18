@@ -4,6 +4,7 @@ import (
 	"crypto/sha512"
 	"fmt"
 	"io/ioutil"
+	"time"
 
 	"github.com/flexphere/sts/lib/aes"
 	"github.com/flexphere/sts/lib/directory"
@@ -29,15 +30,20 @@ func Create(ctx *gin.Context) {
 		ctx.JSON(response.NewInternalServerError())
 		panic(err)
 	}()
-	k := key.RandStringBytesMaskImprSrc(16)
 
+	enc_start := time.Now().UTC()
+
+	k := key.RandStringBytesMaskImprSrc(16)
 	encryptedStr, err := aes.Encrypt([]byte(k), string(req))
 	if err != nil {
 		ctx.JSON(response.NewInternalServerError())
 		panic(err)
 	}
-
 	key := fmt.Sprintf("%X", sha512.Sum512(encryptedStr))
+
+	fmt.Println("enc done in: ", time.Since(enc_start))
+
+	upload_start := time.Now().UTC()
 
 	var uploader storage.Storage
 	if *settings.Settings.S3_BUCKET_NAME == "" {
@@ -50,6 +56,8 @@ func Create(ctx *gin.Context) {
 		ctx.JSON(response.NewInternalServerError())
 		panic(err)
 	}
+
+	fmt.Println("enc done in: ", time.Since(upload_start))
 
 	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(
