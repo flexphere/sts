@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -9,7 +8,6 @@ import (
 
 	"github.com/flexphere/sts/controllers/container"
 	"github.com/flexphere/sts/lib/response"
-	"github.com/flexphere/sts/lib/s3"
 	"github.com/flexphere/sts/settings"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -59,29 +57,9 @@ func main() {
 	router.GET("/favicon.ico", favicon)
 	router.GET("/ping", ping)
 	router.POST("/ping", ping)
-	router.POST("/set", container.Create)
-	router.POST("/get", func(ctx *gin.Context) {
-		ctx.Header("Content-Type", "application/json")
-		req := &struct {
-			Body     string `json:"id"`
-			Password string `json:"password"`
-		}{}
-		decoder := json.NewDecoder(ctx.Request.Body)
-
-		if err := decoder.Decode(req); err != nil {
-			ctx.JSON(response.NewInternalServerError())
-			panic(err)
-		}
-
-		downloader := s3.New()
-		plain, err := downloader.Download(req.Body)
-		if err != nil {
-			ctx.JSON(response.NewNotFound())
-			panic(err)
-		}
-
-		ctx.Writer.Write([]byte(plain))
-	})
+	router.POST("/info", container.Info)
+	router.POST("/download", container.Download)
+	router.POST("/upload", container.Upload)
 
 	router.Run(":8080")
 }
